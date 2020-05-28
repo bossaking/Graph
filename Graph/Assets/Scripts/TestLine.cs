@@ -16,6 +16,9 @@ public class TestLine : MonoBehaviour
     private List<GameObject> inputNodes = new List<GameObject>();
     private List<GameObject> weightNodes = new List<GameObject>();
 
+    public Text biasValueText;
+    public Text stepsValueText;
+    public Text logInfo;
 
     private LineRenderer lineRenderer;
 
@@ -48,8 +51,11 @@ public class TestLine : MonoBehaviour
         expectedValues = new int[] { 0, 0, 1, 1, 1, 0 };
         actualValues = new int[] { -1, -1, -1, -1, -1, -1 };
         bias = Math.Round((new Random().NextDouble() * 2 - 1), 2);
+        biasValueText.text = bias.ToString();
         error = 0;
         steps = 0;
+        stepsValueText.text = steps.ToString();
+        logInfo.text = "Ready to learning";
 
         for (int i = 0; i < nodesCount; i++)
         {
@@ -155,13 +161,14 @@ public class TestLine : MonoBehaviour
                     bias += error;
                 }
 
-                Debug.Log(error);
+                biasValueText.text = bias.ToString();
             }
             steps++;
+            stepsValueText.text = steps.ToString();
 
         } while (!CompareActualExpectedValues(actualValues, expectedValues));
 
-        Debug.Log($"Complete! {steps} passed");
+        logInfo.text = $"Complete after {steps} steps";
     }
 
 
