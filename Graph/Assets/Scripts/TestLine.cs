@@ -10,11 +10,15 @@ public class TestLine : MonoBehaviour
     public GameObject inputNodePrefab;
     public GameObject weightPrefab;
     public GameObject outputNodePrefab;
+    public GameObject signalPrefab;
 
     public GameObject parentCanvas;
 
     private List<GameObject> inputNodes = new List<GameObject>();
     private List<GameObject> weightNodes = new List<GameObject>();
+    private GameObject outputNode;
+    private List<GameObject> signals = new List<GameObject>();
+
 
     public Text biasValueText;
     public Text stepsValueText;
@@ -32,6 +36,8 @@ public class TestLine : MonoBehaviour
     int error;
     int steps;
 
+    public int stage;
+
     Random random = new Random();
     public void Start()
     {
@@ -43,6 +49,28 @@ public class TestLine : MonoBehaviour
         CreateWeightNodes(centerY, partCenter, parts);
         CreateOutputNode();
         ResetValues();
+    }
+
+    public void Update()
+    {
+        if (stage == 1)
+        {
+
+            for(int i = 0; i < nodesCount; i++)
+            {
+                signals[i].GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(signals[i].GetComponent<RectTransform>().anchoredPosition,
+                    weightNodes[i].GetComponent<RectTransform>().anchoredPosition, Time.deltaTime);
+            }
+
+        }
+        else if (stage == 2)
+        {
+            for (int i = 0; i < nodesCount; i++)
+            {
+                signals[i].GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(signals[i].GetComponent<RectTransform>().anchoredPosition,
+                    outputNode.GetComponent<RectTransform>().anchoredPosition, Time.deltaTime);
+            }
+        }
     }
 
     public void ResetValues()
@@ -61,6 +89,9 @@ public class TestLine : MonoBehaviour
         {
             weightNodes[i].GetComponentInChildren<Text>().text = Math.Round((random.NextDouble() * 2 - 1), 2).ToString();
         }
+
+        stage = 0;
+        ResetSignalsPositions();
     }
 
     #region Create Nodes
@@ -70,10 +101,23 @@ public class TestLine : MonoBehaviour
         for (int i = 0; i < nodesCount; i++)
         {
             inputNodes.Add(Instantiate(inputNodePrefab, parentCanvas.transform));
+            signals.Add(Instantiate(signalPrefab, parentCanvas.transform));
             centerY = partCenter + i * parts;
             inputNodes[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(100f, -centerY);
+            signals[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(100f, -centerY);
+            signals[i].transform.SetSiblingIndex(i);
+
         }
  
+    }
+
+    private void ResetSignalsPositions()
+    {
+        
+        for(int i = 0; i < nodesCount; i++)
+        {
+            signals[i].GetComponent<RectTransform>().anchoredPosition = inputNodes[i].GetComponent<RectTransform>().anchoredPosition;
+        }
     }
 
     private void CreateWeightNodes(float centerY, float partCenter, float parts)
@@ -100,7 +144,7 @@ public class TestLine : MonoBehaviour
 
     private void CreateOutputNode()
     {
-        GameObject outputNode = Instantiate(outputNodePrefab, parentCanvas.transform);
+        outputNode = Instantiate(outputNodePrefab, parentCanvas.transform);
         outputNode.GetComponent<RectTransform>().anchoredPosition = new Vector2(600f, outputNode.GetComponent<RectTransform>().anchoredPosition.y);
 
         for (int i = 0; i < nodesCount; i++)
@@ -168,7 +212,7 @@ public class TestLine : MonoBehaviour
 
         } while (!CompareActualExpectedValues(actualValues, expectedValues));
 
-        logInfo.text = $"Complete after {steps} steps";
+        logInfo.text = $"Completed after {steps} steps";
     }
 
 

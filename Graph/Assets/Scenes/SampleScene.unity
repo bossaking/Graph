@@ -396,11 +396,14 @@ MonoBehaviour:
     type: 3}
   outputNodePrefab: {fileID: 4066395815194602660, guid: d20dd45ec6818964fba93c7393682312,
     type: 3}
+  signalPrefab: {fileID: 3679401712417310347, guid: f7e22fda06d7d3944a43c794a180fc5d,
+    type: 3}
   parentCanvas: {fileID: 1443630288}
   biasValueText: {fileID: 432235570}
   stepsValueText: {fileID: 635450079}
   logInfo: {fileID: 125798842}
   nodesCount: 4
+  showSignalsAnimation: 0
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
