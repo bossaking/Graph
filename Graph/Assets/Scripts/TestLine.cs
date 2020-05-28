@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using Random = System.Random;
 
 public class TestLine : MonoBehaviour
 {
-    public List<Transform> points = new List<Transform>();
-
     public GameObject inputNodePrefab;
     public GameObject weightPrefab;
     public GameObject outputNodePrefab;
@@ -20,6 +21,15 @@ public class TestLine : MonoBehaviour
 
     public int nodesCount;
 
+    private int[,] inputValues;
+    private int[] expectedValues;
+    private int[] actualValues;
+
+    double bias;
+    int error;
+    int steps;
+
+    Random random = new Random();
     public void Start()
     {
         float centerY = 0;
@@ -29,8 +39,25 @@ public class TestLine : MonoBehaviour
         CreateInputNodes(centerY, partCenter, parts);
         CreateWeightNodes(centerY, partCenter, parts);
         CreateOutputNode();
+        ResetValues();
     }
 
+    public void ResetValues()
+    {
+        inputValues = new int[,] { { 1, 1, 1, 0 }, { 1, 1, 1, 1 }, { 0, 1, 1, 0 }, { 0, 0, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 1 } };
+        expectedValues = new int[] { 0, 0, 1, 1, 1, 0 };
+        actualValues = new int[] { -1, -1, -1, -1, -1, -1 };
+        bias = Math.Round((new Random().NextDouble() * 2 - 1), 2);
+        error = 0;
+        steps = 0;
+
+        for (int i = 0; i < nodesCount; i++)
+        {
+            weightNodes[i].GetComponentInChildren<Text>().text = Math.Round((random.NextDouble() * 2 - 1), 2).ToString();
+        }
+    }
+
+    #region Create Nodes
     private void CreateInputNodes(float centerY, float partCenter, float parts)
     {
 
@@ -61,6 +88,8 @@ public class TestLine : MonoBehaviour
 
             DrawLine(new Transform[] { inputNodes[i].transform, weightNodes[i].transform });
         }
+
+        ResetValues();
     }
 
     private void CreateOutputNode()
@@ -74,6 +103,10 @@ public class TestLine : MonoBehaviour
         }
     }
 
+
+    #endregion
+
+    #region Draw Lines
     private void DrawLine(Transform[] transforms)
     {
         GameObject line = new GameObject();
@@ -95,4 +128,75 @@ public class TestLine : MonoBehaviour
 
         lineRenderer.SetPositions(pointsArray);
     }
+    #endregion
+
+    #region Lerning
+
+    public void Learning()
+    {
+        Text weightText;
+        do
+        {
+            for (int i = 0; i < inputValues.GetLength(0); i++)
+            {
+                actualValues[i] = ActivationFunctionBinaryStep(i);
+
+                error = CalculateError(expectedValues[i], actualValues[i]);
+
+                if (error != 0)
+                {
+
+                    for (int j = 0; j < inputValues.GetLength(1); j++)
+                    {
+                        weightText = weightNodes[j].GetComponentInChildren<Text>();
+                        weightText.text = (inputValues[i, j] * error + double.Parse(weightText.text)).ToString();
+                    }
+
+                    bias += error;
+                }
+
+                Debug.Log(error);
+            }
+            steps++;
+
+        } while (!CompareActualExpectedValues(actualValues, expectedValues));
+
+        Debug.Log($"Complete! {steps} passed");
+    }
+
+
+
+    public int ActivationFunctionBinaryStep(int i)
+    {
+        double outputValue = 0;
+
+        for (int j = 0; j < inputValues.GetLength(1); j++)
+        {
+            outputValue += inputValues[i, j] * double.Parse(weightNodes[j].GetComponentInChildren<Text>().text);
+        }
+
+        return (outputValue + bias > 0) ? 1 : 0;
+    }
+
+    public int CalculateError(int expectedValue, int actualValue)
+    {
+        return expectedValue - actualValue;
+    }
+
+    public bool CompareActualExpectedValues(int[] actualValues, int[] expectedValues)
+    {
+        for (int i = 0; i < actualValues.Length; i++)
+        {
+            if (actualValues[i] != expectedValues[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    #endregion
+
 }
