@@ -403,7 +403,7 @@ MonoBehaviour:
   stepsValueText: {fileID: 635450079}
   logInfo: {fileID: 125798842}
   nodesCount: 4
-  showSignalsAnimation: 0
+  stage: 0
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -1098,10 +1098,10 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 519420030}
         m_MethodName: Learning
-        m_Mode: 1
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 1634195052}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Button, UnityEngine.UI
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

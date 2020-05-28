@@ -59,7 +59,7 @@ public class TestLine : MonoBehaviour
             for(int i = 0; i < nodesCount; i++)
             {
                 signals[i].GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(signals[i].GetComponent<RectTransform>().anchoredPosition,
-                    weightNodes[i].GetComponent<RectTransform>().anchoredPosition, Time.deltaTime);
+                    weightNodes[i].GetComponent<RectTransform>().anchoredPosition, 3 * Time.deltaTime);
             }
 
         }
@@ -68,7 +68,7 @@ public class TestLine : MonoBehaviour
             for (int i = 0; i < nodesCount; i++)
             {
                 signals[i].GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(signals[i].GetComponent<RectTransform>().anchoredPosition,
-                    outputNode.GetComponent<RectTransform>().anchoredPosition, Time.deltaTime);
+                    outputNode.GetComponent<RectTransform>().anchoredPosition, 3 * Time.deltaTime);
             }
         }
     }
@@ -90,8 +90,17 @@ public class TestLine : MonoBehaviour
             weightNodes[i].GetComponentInChildren<Text>().text = Math.Round((random.NextDouble() * 2 - 1), 2).ToString();
         }
 
-        stage = 0;
+        HidePanels();
         ResetSignalsPositions();
+    }
+    private void ResetSignalsPositions()
+    {
+        stage = 0;
+
+        for (int i = 0; i < nodesCount; i++)
+        {
+            signals[i].GetComponent<RectTransform>().anchoredPosition = inputNodes[i].GetComponent<RectTransform>().anchoredPosition;
+        }
     }
 
     #region Create Nodes
@@ -109,15 +118,6 @@ public class TestLine : MonoBehaviour
 
         }
  
-    }
-
-    private void ResetSignalsPositions()
-    {
-        
-        for(int i = 0; i < nodesCount; i++)
-        {
-            signals[i].GetComponent<RectTransform>().anchoredPosition = inputNodes[i].GetComponent<RectTransform>().anchoredPosition;
-        }
     }
 
     private void CreateWeightNodes(float centerY, float partCenter, float parts)
@@ -182,14 +182,45 @@ public class TestLine : MonoBehaviour
 
     #region Lerning
 
-    public void Learning()
+    public void Learning(Button button)
+    {
+        Text buttonText = button.transform.GetChild(0).GetComponent<Text>();
+        Debug.Log(button.name);
+
+        if(buttonText.text == "Start")
+        {
+            buttonText.text = "Stop";
+            StartCoroutine(InfoAnimate());
+            StartCoroutine(LearningEnum());
+        }
+        else
+        {
+            buttonText.text = "Start";
+            StopAllCoroutines();
+            ResetValues();
+        }
+
+    }
+
+    private IEnumerator LearningEnum()
     {
         Text weightText;
+
         do
         {
             for (int i = 0; i < inputValues.GetLength(0); i++)
             {
+                HidePanels();
+                ShowInputs(i);
+                stage = 1;
+                yield return new WaitForSecondsRealtime(1f);
+
+                
                 actualValues[i] = ActivationFunctionBinaryStep(i);
+                yield return new WaitForSecondsRealtime(1f);
+                stage = 2;
+                yield return new WaitForSecondsRealtime(2f);
+                
 
                 error = CalculateError(expectedValues[i], actualValues[i]);
 
@@ -206,6 +237,8 @@ public class TestLine : MonoBehaviour
                 }
 
                 biasValueText.text = bias.ToString();
+                ResetSignalsPositions();
+                yield return new WaitForSecondsRealtime(2f);
             }
             steps++;
             stepsValueText.text = steps.ToString();
@@ -213,9 +246,9 @@ public class TestLine : MonoBehaviour
         } while (!CompareActualExpectedValues(actualValues, expectedValues));
 
         logInfo.text = $"Completed after {steps} steps";
+        StopAllCoroutines();
+        
     }
-
-
 
     public int ActivationFunctionBinaryStep(int i)
     {
@@ -224,6 +257,7 @@ public class TestLine : MonoBehaviour
         for (int j = 0; j < inputValues.GetLength(1); j++)
         {
             outputValue += inputValues[i, j] * double.Parse(weightNodes[j].GetComponentInChildren<Text>().text);
+            ShowPanels(i, j);
         }
 
         return (outputValue + bias > 0) ? 1 : 0;
@@ -249,5 +283,39 @@ public class TestLine : MonoBehaviour
 
 
     #endregion
+
+    private void ShowInputs(int i)
+    {
+        for(int j = 0; j < nodesCount; j++)
+        {
+            inputNodes[j].transform.GetChild(0).GetComponent<Text>().text = inputValues[i, j].ToString();
+        }
+    }
+
+    private void ShowPanels(int i, int j)
+    {
+        GameObject panel = weightNodes[j].transform.GetChild(1).gameObject;
+        panel.transform.GetChild(0).GetComponent<Text>().text = $"{ inputValues[i, j] } x { weightNodes[j].GetComponentInChildren<Text>().text }";
+        panel.SetActive(true);
+    }
+
+    private void HidePanels()
+    {
+        for (int i = 0; i < nodesCount; i++)
+        {
+            weightNodes[i].transform.GetChild(1).gameObject.SetActive(false);
+        }
+    }
+
+    private IEnumerator InfoAnimate()
+    {
+        logInfo.text = "Learning.";
+        yield return new WaitForSecondsRealtime(1f);
+        logInfo.text = "Learning..";
+        yield return new WaitForSecondsRealtime(1f);
+        logInfo.text = "Learning...";
+        yield return new WaitForSecondsRealtime(1f);
+        StartCoroutine(InfoAnimate());
+    }
 
 }
