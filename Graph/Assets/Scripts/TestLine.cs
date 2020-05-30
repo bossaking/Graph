@@ -83,10 +83,21 @@ public class TestLine : MonoBehaviour
                     sumNode.GetComponent<RectTransform>().anchoredPosition, 3 * Time.deltaTime);
             }
         }
+        else if (stage == 3)
+        {
+            signals[0].GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(signals[0].GetComponent<RectTransform>().anchoredPosition,
+                    thresholdNode.GetComponent<RectTransform>().anchoredPosition, 3 * Time.deltaTime);
+        }
+        else if(stage == 4)
+        {
+            signals[0].GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(signals[0].GetComponent<RectTransform>().anchoredPosition,
+                    outputNode.GetComponent<RectTransform>().anchoredPosition, 3 * Time.deltaTime);
+        }
     }
 
     public void ResetValues()
     {
+
         inputValues = new int[,] { { 1, 1, 1, 0 }, { 1, 1, 1, 1 }, { 0, 1, 1, 0 }, { 0, 0, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 1 } };
         expectedValues = new int[] { 0, 0, 1, 1, 1, 0 };
         actualValues = new int[] { -1, -1, -1, -1, -1, -1 };
@@ -218,7 +229,6 @@ public class TestLine : MonoBehaviour
     public void Learning(Button button)
     {
         Text buttonText = button.transform.GetChild(0).GetComponent<Text>();
-        Debug.Log(button.name);
 
         if(buttonText.text == "Start")
         {
@@ -229,11 +239,16 @@ public class TestLine : MonoBehaviour
         else
         {
             buttonText.text = "Start";
-            StopAllCoroutines();
-            ResetValues();
-            examplesTable.UnselectAllRows();
+            StopLearning();
         }
 
+    }
+
+    private void StopLearning()
+    {
+        StopAllCoroutines();
+        ResetValues();
+        examplesTable.UnselectAllRows();
     }
 
     private IEnumerator LearningEnum()
@@ -242,9 +257,12 @@ public class TestLine : MonoBehaviour
 
         do
         {
+            steps++;
+            stepsValueText.text = steps.ToString();
             for (int i = 0; i < inputValues.GetLength(0); i++)
             {
                 HidePanels();
+                ClearNodes();
                 examplesTable.SelectRow(i);
                 ShowInputs(i);
                 stage = 1;
@@ -255,7 +273,14 @@ public class TestLine : MonoBehaviour
                 yield return new WaitForSecondsRealtime(1f);
                 stage = 2;
                 yield return new WaitForSecondsRealtime(2f);
-                
+
+                stage = 3;
+                yield return new WaitForSecondsRealtime(2f);
+
+                stage = 4;
+                yield return new WaitForSecondsRealtime(1f);
+
+                outputNode.transform.GetChild(0).GetComponent<Text>().text = actualValues[i].ToString();
 
                 error = CalculateError(expectedValues[i], actualValues[i]);
 
@@ -275,8 +300,8 @@ public class TestLine : MonoBehaviour
                 ResetSignalsPositions();
                 yield return new WaitForSecondsRealtime(2f);
             }
-            steps++;
-            stepsValueText.text = steps.ToString();
+            
+            
             examplesTable.UnselectAllRows();
 
         } while (!CompareActualExpectedValues(actualValues, expectedValues));
@@ -343,6 +368,10 @@ public class TestLine : MonoBehaviour
         }
     }
 
+    private void ClearNodes()
+    {
+        outputNode.transform.GetChild(0).GetComponent<Text>().text = string.Empty;
+    }
     private IEnumerator InfoAnimate()
     {
         logInfo.text = "Learning.";

@@ -45,13 +45,14 @@ public class ExamplesTable : MonoBehaviour
 
             for (int j = 0; j < inputsCount; j++)
             {
+                GameObject cell = Instantiate(cellPrefab, cellPanel.transform);
                 if (j < inputsCount - 1)
                 {
-                    Instantiate(cellPrefab, cellPanel.transform).GetComponent<Text>().text = testLine.inputValues[i, j].ToString();
+                    cell.GetComponent<Text>().text = testLine.inputValues[i, j].ToString();
                 }
                 else
                 {
-                    Instantiate(cellPrefab, cellPanel.transform).GetComponent<Text>().text = testLine.expectedValues[i].ToString();
+                    cell.GetComponent<Text>().text = testLine.expectedValues[i].ToString();
                 }
             }
 
@@ -63,18 +64,33 @@ public class ExamplesTable : MonoBehaviour
     {
         if (index > 0)
         {
-            content.transform.GetChild(index - 1).GetComponent<Image>().color = new Color32(149, 149, 149, 226);
+            content.transform.GetChild(index - 1).GetComponent<Image>().color = Color.white;
 
+            for (int i = 0; i < content.transform.GetChild(index - 1).transform.childCount; i++)
+            {
+                content.transform.GetChild(index - 1).transform.GetChild(i).GetComponent<Text>().fontStyle = FontStyle.Normal;
+            }
         }
 
         content.transform.GetChild(index).GetComponent<Image>().color = Color.green;
+        
+        for(int i = 0; i < content.transform.GetChild(index).transform.childCount; i++)
+        {
+            content.transform.GetChild(index).transform.GetChild(i).GetComponent<Text>().fontStyle = FontStyle.Bold;
+        }
+
     }
 
     public void UnselectAllRows()
     {
         for(int i = 0; i < testLine.inputValues.GetLength(0); i++)
         {
-            content.transform.GetChild(i).GetComponent<Image>().color = new Color32(149, 149, 149, 226);
+            content.transform.GetChild(i).GetComponent<Image>().color = Color.white;
+
+            for (int j = 0; j < content.transform.GetChild(i).transform.childCount; j++)
+            {
+                content.transform.GetChild(i).transform.GetChild(j).GetComponent<Text>().fontStyle = FontStyle.Normal;
+            }
         }
     }
 }

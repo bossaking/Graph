@@ -642,7 +642,7 @@ MonoBehaviour:
   stepsValueText: {fileID: 635450079}
   logInfo: {fileID: 125798842}
   nodesCount: 4
-  threshold: 1.5
+  threshold: 0.7
   expectedValues: 
   stage: 0
 --- !u!20 &519420031
@@ -1020,7 +1020,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'STEPS:'
+  m_Text: 'STEP:'
 --- !u!222 &925365705
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1650,7 +1650,7 @@ MonoBehaviour:
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 800, y: 50}
-  m_Spacing: {x: 0, y: 0}
+  m_Spacing: {x: 0, y: 1}
   m_Constraint: 1
   m_ConstraintCount: 1
 --- !u!1 &2003663869
