@@ -162,7 +162,7 @@ public class TestLine : MonoBehaviour
     private void CreateThresholdNode()
     {
         thresholdNode = Instantiate(weightPrefab, parentCanvas.transform);
-        thresholdNode.GetComponent<RectTransform>().anchoredPosition = new Vector2(900f, thresholdNode.GetComponent<RectTransform>().anchoredPosition.y);
+        thresholdNode.GetComponent<RectTransform>().anchoredPosition = new Vector2(800f, thresholdNode.GetComponent<RectTransform>().anchoredPosition.y);
 
         thresholdNode.transform.GetChild(0).GetComponent<Text>().text = threshold.ToString();
 
@@ -172,7 +172,7 @@ public class TestLine : MonoBehaviour
     private void CreateOutputNode()
     {
         outputNode = Instantiate(outputNodePrefab, parentCanvas.transform);
-        outputNode.GetComponent<RectTransform>().anchoredPosition = new Vector2(1200f, outputNode.GetComponent<RectTransform>().anchoredPosition.y);
+        outputNode.GetComponent<RectTransform>().anchoredPosition = new Vector2(1000f, outputNode.GetComponent<RectTransform>().anchoredPosition.y);
 
         outputNode.transform.GetChild(0).GetComponent<Text>().text = string.Empty;
 
