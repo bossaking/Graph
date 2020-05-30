@@ -16,6 +16,8 @@ public class TestLine : MonoBehaviour
 
     private List<GameObject> inputNodes = new List<GameObject>();
     private List<GameObject> weightNodes = new List<GameObject>();
+    private GameObject sumNode;
+    private GameObject thresholdNode;
     private GameObject outputNode;
     private List<GameObject> signals = new List<GameObject>();
 
@@ -27,6 +29,7 @@ public class TestLine : MonoBehaviour
     private LineRenderer lineRenderer;
 
     public int nodesCount;
+    public float threshold;
 
     private int[,] inputValues;
     private int[] expectedValues;
@@ -47,6 +50,8 @@ public class TestLine : MonoBehaviour
 
         CreateInputNodes(centerY, partCenter, parts);
         CreateWeightNodes(centerY, partCenter, parts);
+        CreateSumNode();
+        CreateThresholdNode();
         CreateOutputNode();
         ResetValues();
     }
@@ -68,7 +73,7 @@ public class TestLine : MonoBehaviour
             for (int i = 0; i < nodesCount; i++)
             {
                 signals[i].GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(signals[i].GetComponent<RectTransform>().anchoredPosition,
-                    outputNode.GetComponent<RectTransform>().anchoredPosition, 3 * Time.deltaTime);
+                    sumNode.GetComponent<RectTransform>().anchoredPosition, 3 * Time.deltaTime);
             }
         }
     }
@@ -113,6 +118,7 @@ public class TestLine : MonoBehaviour
             signals.Add(Instantiate(signalPrefab, parentCanvas.transform));
             centerY = partCenter + i * parts;
             inputNodes[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(100f, -centerY);
+            inputNodes[i].transform.GetChild(0).GetComponent<Text>().text = string.Empty;
             signals[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(100f, -centerY);
             signals[i].transform.SetSiblingIndex(i);
 
@@ -142,17 +148,36 @@ public class TestLine : MonoBehaviour
         ResetValues();
     }
 
-    private void CreateOutputNode()
+    private void CreateSumNode()
     {
-        outputNode = Instantiate(outputNodePrefab, parentCanvas.transform);
-        outputNode.GetComponent<RectTransform>().anchoredPosition = new Vector2(600f, outputNode.GetComponent<RectTransform>().anchoredPosition.y);
+        sumNode = Instantiate(outputNodePrefab, parentCanvas.transform);
+        sumNode.GetComponent<RectTransform>().anchoredPosition = new Vector2(600f, sumNode.GetComponent<RectTransform>().anchoredPosition.y);
 
         for (int i = 0; i < nodesCount; i++)
         {
-            DrawLine(new Transform[] { weightNodes[i].transform, outputNode.transform });
+            DrawLine(new Transform[] { weightNodes[i].transform, sumNode.transform });
         }
     }
 
+    private void CreateThresholdNode()
+    {
+        thresholdNode = Instantiate(weightPrefab, parentCanvas.transform);
+        thresholdNode.GetComponent<RectTransform>().anchoredPosition = new Vector2(900f, thresholdNode.GetComponent<RectTransform>().anchoredPosition.y);
+
+        thresholdNode.transform.GetChild(0).GetComponent<Text>().text = threshold.ToString();
+
+        DrawLine(new Transform[] { sumNode.transform, thresholdNode.transform });
+    }
+
+    private void CreateOutputNode()
+    {
+        outputNode = Instantiate(outputNodePrefab, parentCanvas.transform);
+        outputNode.GetComponent<RectTransform>().anchoredPosition = new Vector2(1200f, outputNode.GetComponent<RectTransform>().anchoredPosition.y);
+
+        outputNode.transform.GetChild(0).GetComponent<Text>().text = string.Empty;
+
+        DrawLine(new Transform[] { thresholdNode.transform, outputNode.transform });
+    }
 
     #endregion
 
@@ -260,7 +285,7 @@ public class TestLine : MonoBehaviour
             ShowPanels(i, j);
         }
 
-        return (outputValue + bias > 0) ? 1 : 0;
+        return (outputValue + bias > threshold) ? 1 : 0;
     }
 
     public int CalculateError(int expectedValue, int actualValue)
