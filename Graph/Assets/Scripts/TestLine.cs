@@ -36,8 +36,10 @@ public class TestLine : MonoBehaviour
 
     [HideInInspector]
     public int[,] inputValues;
+    [HideInInspector]
     public int[] expectedValues;
     private int[] actualValues;
+    private double[] weights;
 
     double bias;
     int error;
@@ -101,6 +103,7 @@ public class TestLine : MonoBehaviour
         inputValues = new int[,] { { 1, 1, 1, 0 }, { 1, 1, 1, 1 }, { 0, 1, 1, 0 }, { 0, 0, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 1 } };
         expectedValues = new int[] { 0, 0, 1, 1, 1, 0 };
         actualValues = new int[] { -1, -1, -1, -1, -1, -1 };
+        weights = new double[nodesCount];
         bias = Math.Round((new Random().NextDouble() * 2 - 1), 2);
         biasValueText.text = bias.ToString();
         error = 0;
@@ -110,7 +113,8 @@ public class TestLine : MonoBehaviour
 
         for (int i = 0; i < nodesCount; i++)
         {
-            weightNodes[i].GetComponentInChildren<Text>().text = Math.Round((random.NextDouble() * 2 - 1), 2).ToString();
+            weights[i] = Math.Round((random.NextDouble() * 2 - 1), 2);
+            weightNodes[i].GetComponentInChildren<Text>().text = weights[i].ToString();
         }
 
         HidePanels();
@@ -164,7 +168,7 @@ public class TestLine : MonoBehaviour
             DrawLine(new Transform[] { inputNodes[i].transform, weightNodes[i].transform });
         }
 
-        ResetValues();
+        
     }
 
     private void CreateSumNode()
@@ -196,6 +200,8 @@ public class TestLine : MonoBehaviour
         outputNode.transform.GetChild(0).GetComponent<Text>().text = string.Empty;
 
         DrawLine(new Transform[] { thresholdNode.transform, outputNode.transform });
+
+        //ResetValues();
     }
 
     #endregion
@@ -271,15 +277,17 @@ public class TestLine : MonoBehaviour
                 
                 actualValues[i] = ActivationFunctionBinaryStep(i);
                 yield return new WaitForSecondsRealtime(1f);
+
                 stage = 2;
-                yield return new WaitForSecondsRealtime(2f);
-
-                stage = 3;
-                yield return new WaitForSecondsRealtime(2f);
-
-                stage = 4;
                 yield return new WaitForSecondsRealtime(1f);
 
+                ShowSumPanel(i);
+                
+                yield return new WaitForSecondsRealtime(2f);
+                stage = 3;
+                
+                yield return new WaitForSecondsRealtime(1f);
+                stage = 4;
                 outputNode.transform.GetChild(0).GetComponent<Text>().text = actualValues[i].ToString();
 
                 error = CalculateError(expectedValues[i], actualValues[i]);
@@ -289,8 +297,10 @@ public class TestLine : MonoBehaviour
 
                     for (int j = 0; j < inputValues.GetLength(1); j++)
                     {
+                        weights[j] = inputValues[i, j] * error + weights[j];
+
                         weightText = weightNodes[j].GetComponentInChildren<Text>();
-                        weightText.text = (inputValues[i, j] * error + double.Parse(weightText.text)).ToString();
+                        weightText.text = weights[j].ToString();
                     }
 
                     bias += error;
@@ -317,8 +327,8 @@ public class TestLine : MonoBehaviour
 
         for (int j = 0; j < inputValues.GetLength(1); j++)
         {
-            outputValue += inputValues[i, j] * double.Parse(weightNodes[j].GetComponentInChildren<Text>().text);
-            ShowPanels(i, j);
+            outputValue += inputValues[i, j] * weights[j];
+            ShowWeightsPanels(i, j);
         }
 
         return (outputValue + bias > threshold) ? 1 : 0;
@@ -353,10 +363,29 @@ public class TestLine : MonoBehaviour
         }
     }
 
-    private void ShowPanels(int i, int j)
+    private void ShowWeightsPanels(int i, int j)
     {
         GameObject panel = weightNodes[j].transform.GetChild(1).gameObject;
-        panel.transform.GetChild(0).GetComponent<Text>().text = $"{ inputValues[i, j] } x { weightNodes[j].GetComponentInChildren<Text>().text }";
+        panel.transform.GetChild(0).GetComponent<Text>().text = $"{ inputValues[i, j] } x { weights[j] }";
+        panel.SetActive(true);
+    }
+
+    private void ShowSumPanel(int j)
+    {
+        GameObject panel = sumNode.transform.GetChild(1).gameObject;
+        Text panelText = panel.transform.GetChild(0).GetComponent<Text>();
+        panelText.text = string.Empty;
+
+        for (int i = 0; i < inputNodes.Count; i++)
+        {
+            panelText.text += $"{inputValues[j, i] * weights[i] }";
+
+            if (i < inputNodes.Count - 1)
+            {
+                panelText.text += " + ";
+            }
+        }
+        
         panel.SetActive(true);
     }
 
@@ -366,6 +395,8 @@ public class TestLine : MonoBehaviour
         {
             weightNodes[i].transform.GetChild(1).gameObject.SetActive(false);
         }
+
+        sumNode.transform.GetChild(1).gameObject.SetActive(false);
     }
 
     private void ClearNodes()

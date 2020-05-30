@@ -14,12 +14,13 @@ public class ExamplesTable : MonoBehaviour
 
     void Start()
     {
-        testLine = gameObject.GetComponent<TestLine>();
+        
     }
 
 
     public void DrawExamplesTitle(int inputsCount, int examplesCount)
     {
+        testLine = gameObject.GetComponent<TestLine>();
         examplesTitlePanel.GetComponent<GridLayoutGroup>().cellSize = new Vector2(800 / inputsCount, 50);
 
 
@@ -48,6 +49,7 @@ public class ExamplesTable : MonoBehaviour
                 GameObject cell = Instantiate(cellPrefab, cellPanel.transform);
                 if (j < inputsCount - 1)
                 {
+                    
                     cell.GetComponent<Text>().text = testLine.inputValues[i, j].ToString();
                 }
                 else
