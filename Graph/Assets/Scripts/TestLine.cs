@@ -7,6 +7,9 @@ using Random = System.Random;
 
 public class TestLine : MonoBehaviour
 {
+
+    private ExamplesTable examplesTable;
+
     public GameObject inputNodePrefab;
     public GameObject weightPrefab;
     public GameObject outputNodePrefab;
@@ -31,8 +34,9 @@ public class TestLine : MonoBehaviour
     public int nodesCount;
     public float threshold;
 
-    private int[,] inputValues;
-    private int[] expectedValues;
+    [HideInInspector]
+    public int[,] inputValues;
+    public int[] expectedValues;
     private int[] actualValues;
 
     double bias;
@@ -44,6 +48,8 @@ public class TestLine : MonoBehaviour
     Random random = new Random();
     public void Start()
     {
+        examplesTable = gameObject.GetComponent<ExamplesTable>();
+
         float centerY = 0;
         float partCenter = Screen.height / nodesCount / 2;
         float parts = Screen.height / nodesCount;
@@ -54,6 +60,7 @@ public class TestLine : MonoBehaviour
         CreateThresholdNode();
         CreateOutputNode();
         ResetValues();
+        examplesTable.DrawExamplesTitle(inputValues.GetLength(1) + 1, inputValues.GetLength(0));
     }
 
     public void Update()
@@ -97,6 +104,7 @@ public class TestLine : MonoBehaviour
 
         HidePanels();
         ResetSignalsPositions();
+        
     }
     private void ResetSignalsPositions()
     {
@@ -223,6 +231,7 @@ public class TestLine : MonoBehaviour
             buttonText.text = "Start";
             StopAllCoroutines();
             ResetValues();
+            examplesTable.UnselectAllRows();
         }
 
     }
@@ -236,6 +245,7 @@ public class TestLine : MonoBehaviour
             for (int i = 0; i < inputValues.GetLength(0); i++)
             {
                 HidePanels();
+                examplesTable.SelectRow(i);
                 ShowInputs(i);
                 stage = 1;
                 yield return new WaitForSecondsRealtime(1f);
@@ -267,6 +277,7 @@ public class TestLine : MonoBehaviour
             }
             steps++;
             stepsValueText.text = steps.ToString();
+            examplesTable.UnselectAllRows();
 
         } while (!CompareActualExpectedValues(actualValues, expectedValues));
 

@@ -63,6 +63,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\ExamplesTable.cs" />
     <Compile Include="Assets\Scripts\TestLine.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>E:/Unity_Projects/Graph/Graph/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
