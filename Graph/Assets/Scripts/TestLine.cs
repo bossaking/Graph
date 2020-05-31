@@ -40,6 +40,7 @@ public class TestLine : MonoBehaviour
     public int[] expectedValues;
     private int[] actualValues;
     private double[] weights;
+    private double outputValue;
 
     double bias;
     int error;
@@ -200,8 +201,6 @@ public class TestLine : MonoBehaviour
         outputNode.transform.GetChild(0).GetComponent<Text>().text = string.Empty;
 
         DrawLine(new Transform[] { thresholdNode.transform, outputNode.transform });
-
-        //ResetValues();
     }
 
     #endregion
@@ -276,7 +275,7 @@ public class TestLine : MonoBehaviour
 
                 
                 actualValues[i] = ActivationFunctionBinaryStep(i);
-                yield return new WaitForSecondsRealtime(1f);
+                yield return new WaitForSecondsRealtime(2f);
 
                 stage = 2;
                 yield return new WaitForSecondsRealtime(1f);
@@ -287,7 +286,13 @@ public class TestLine : MonoBehaviour
                 stage = 3;
                 
                 yield return new WaitForSecondsRealtime(1f);
+                ShowThresholdPanel();
+                yield return new WaitForSecondsRealtime(2f);
+
                 stage = 4;
+
+                yield return new WaitForSecondsRealtime(1f);
+
                 outputNode.transform.GetChild(0).GetComponent<Text>().text = actualValues[i].ToString();
 
                 error = CalculateError(expectedValues[i], actualValues[i]);
@@ -323,7 +328,7 @@ public class TestLine : MonoBehaviour
 
     public int ActivationFunctionBinaryStep(int i)
     {
-        double outputValue = 0;
+        outputValue = 0;
 
         for (int j = 0; j < inputValues.GetLength(1); j++)
         {
@@ -389,6 +394,28 @@ public class TestLine : MonoBehaviour
         panel.SetActive(true);
     }
 
+    private void ShowThresholdPanel()
+    {
+        GameObject panel = thresholdNode.transform.GetChild(2).gameObject;
+        Text panelText = panel.transform.GetChild(0).GetComponent<Text>();
+
+        if(outputValue + bias > threshold)
+        {
+            panelText.text = $"{outputValue} + {bias} > {threshold}";
+        }
+        else if(outputValue + bias < threshold)
+        {
+            panelText.text = $"{outputValue} + {bias} < {threshold}";
+        }
+        else
+        {
+            panelText.text = $"{outputValue} + {bias} = {threshold}";
+        }
+
+
+        panel.SetActive(true);
+    }
+
     private void HidePanels()
     {
         for (int i = 0; i < nodesCount; i++)
@@ -397,6 +424,7 @@ public class TestLine : MonoBehaviour
         }
 
         sumNode.transform.GetChild(1).gameObject.SetActive(false);
+        thresholdNode.transform.GetChild(2).gameObject.SetActive(false);
     }
 
     private void ClearNodes()
