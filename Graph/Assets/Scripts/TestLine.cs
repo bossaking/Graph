@@ -293,7 +293,18 @@ public class TestLine : MonoBehaviour
 
                 yield return new WaitForSecondsRealtime(1f);
 
-                outputNode.transform.GetChild(0).GetComponent<Text>().text = actualValues[i].ToString();
+                Text outputValueText = outputNode.transform.GetChild(0).GetComponent<Text>();
+
+                if (actualValues[i] == expectedValues[i])
+                {
+                    outputValueText.color = Color.green;
+                }
+                else
+                {
+                    outputValueText.color = Color.red;
+                }
+
+                outputValueText.text = actualValues[i].ToString();
 
                 error = CalculateError(expectedValues[i], actualValues[i]);
 
@@ -383,7 +394,9 @@ public class TestLine : MonoBehaviour
 
         for (int i = 0; i < inputNodes.Count; i++)
         {
-            panelText.text += $"{inputValues[j, i] * weights[i] }";
+            double output = inputValues[j, i] * weights[i];
+
+            panelText.text += output < 0 ? $"({ output })" : $"{ output }";
 
             if (i < inputNodes.Count - 1)
             {
