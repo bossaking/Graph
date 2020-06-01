@@ -328,7 +328,7 @@ public class TestLine : MonoBehaviour
 
                     for (int j = 0; j < inputValues.GetLength(1); j++)
                     {
-                        weights[j] = inputValues[i, j] * error + weights[j];
+                        weights[j] = Math.Round(inputValues[i, j] * error + weights[j], 2);
 
                         weightText = weightNodes[j].GetComponentInChildren<Text>();
                         weightText.text = weights[j].ToString();
@@ -339,7 +339,7 @@ public class TestLine : MonoBehaviour
 
                 biasValueText.text = bias.ToString();
                 ResetSignalsPositions();
-                //logout.WriteLog(stage);
+                
                 yield return new WaitForSecondsRealtime(2f);
             }
             
@@ -360,7 +360,7 @@ public class TestLine : MonoBehaviour
 
         for (int j = 0; j < inputValues.GetLength(1); j++)
         {
-            outputValue += inputValues[i, j] * weights[j];
+            outputValue += Math.Round(inputValues[i, j] * weights[j], 2);
             ShowWeightsPanels(i, j);
         }
 
