@@ -403,7 +403,10 @@ public class TestLine : MonoBehaviour
                 panelText.text += " + ";
             }
         }
-        
+
+        sumNode.transform.GetChild(0).GetComponent<Text>().text = outputValue.ToString();
+        sumNode.transform.GetChild(0).GetComponent<Text>().fontSize = 23;
+
         panel.SetActive(true);
     }
 
@@ -438,6 +441,8 @@ public class TestLine : MonoBehaviour
 
         sumNode.transform.GetChild(1).gameObject.SetActive(false);
         thresholdNode.transform.GetChild(2).gameObject.SetActive(false);
+        sumNode.transform.GetChild(0).GetComponent<Text>().text = "Σ";
+        sumNode.transform.GetChild(0).GetComponent<Text>().fontSize = 25;
     }
 
     private void ClearNodes()
