@@ -2,6 +2,7 @@ ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
     - ExamplesTable
+    - Logout
     - TestLine
     Unity.2D.Tilemap.Editor.dll:
     - UnityEditor.Tilemaps.GridPaintingState
@@ -74,6 +75,8 @@ ScriptsOnlyBuild:
       Script: {instanceID: 11114}
     - Class: 114
       Script: {instanceID: 11484}
+    - Class: 114
+      Script: {instanceID: 13100}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -283,7 +286,7 @@ ScriptsOnlyBuild:
     className: Learning
   - hash:
       serializedVersion: 2
-      Hash: 05b2a3e4f03fa9799bf8efcc77b2a9ed
+      Hash: 9dedda15a82934561e1907e8f0bf7aa4
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: TestLine
@@ -521,6 +524,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: PlayableTrack
+  - hash:
+      serializedVersion: 2
+      Hash: b5ac1421546c4cbcd983dc99da50ce10
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: Logout
   platform: 19
   scenePathNames:
   - Assets/Scenes/SampleScene.unity

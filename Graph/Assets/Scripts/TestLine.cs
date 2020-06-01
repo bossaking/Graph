@@ -9,6 +9,7 @@ public class TestLine : MonoBehaviour
 {
 
     private ExamplesTable examplesTable;
+    private Logout logout;
 
     public GameObject inputNodePrefab;
     public GameObject weightPrefab;
@@ -16,6 +17,8 @@ public class TestLine : MonoBehaviour
     public GameObject signalPrefab;
 
     public GameObject parentCanvas;
+
+    public Button resetButton;
 
     private List<GameObject> inputNodes = new List<GameObject>();
     private List<GameObject> weightNodes = new List<GameObject>();
@@ -40,18 +43,21 @@ public class TestLine : MonoBehaviour
     public int[] expectedValues;
     private int[] actualValues;
     private double[] weights;
-    private double outputValue;
+    public double outputValue;
 
-    double bias;
+    public double bias;
     int error;
     int steps;
 
     public int stage;
+    [HideInInspector]
+    public int ratio = 0;
 
     Random random = new Random();
     public void Start()
     {
         examplesTable = gameObject.GetComponent<ExamplesTable>();
+        logout = gameObject.GetComponent<Logout>();
 
         float centerY = 0;
         float partCenter = Screen.height / nodesCount / 2;
@@ -237,14 +243,17 @@ public class TestLine : MonoBehaviour
 
         if(buttonText.text == "Start")
         {
+            resetButton.interactable = false;
             buttonText.text = "Stop";
             StartCoroutine(InfoAnimate());
             StartCoroutine(LearningEnum());
         }
         else
         {
+            resetButton.interactable = true;
             buttonText.text = "Start";
             StopLearning();
+            logout.ClearLogs();
         }
 
     }
@@ -270,28 +279,34 @@ public class TestLine : MonoBehaviour
                 ClearNodes();
                 examplesTable.SelectRow(i);
                 ShowInputs(i);
+                logout.WriteLog(stage);
+                yield return new WaitForSecondsRealtime(2f);
                 stage = 1;
                 yield return new WaitForSecondsRealtime(1f);
 
                 
                 actualValues[i] = ActivationFunctionBinaryStep(i);
+                logout.WriteLog(stage);
                 yield return new WaitForSecondsRealtime(2f);
 
                 stage = 2;
                 yield return new WaitForSecondsRealtime(1f);
 
                 ShowSumPanel(i);
-                
+                logout.WriteLog(stage);
                 yield return new WaitForSecondsRealtime(2f);
                 stage = 3;
                 
                 yield return new WaitForSecondsRealtime(1f);
                 ShowThresholdPanel();
+                logout.WriteLog(stage);
                 yield return new WaitForSecondsRealtime(2f);
 
                 stage = 4;
 
                 yield return new WaitForSecondsRealtime(1f);
+
+                logout.WriteLog(stage);
 
                 Text outputValueText = outputNode.transform.GetChild(0).GetComponent<Text>();
 
@@ -324,11 +339,13 @@ public class TestLine : MonoBehaviour
 
                 biasValueText.text = bias.ToString();
                 ResetSignalsPositions();
+                //logout.WriteLog(stage);
                 yield return new WaitForSecondsRealtime(2f);
             }
             
             
             examplesTable.UnselectAllRows();
+
 
         } while (!CompareActualExpectedValues(actualValues, expectedValues));
 
@@ -418,14 +435,17 @@ public class TestLine : MonoBehaviour
         if(outputValue + bias > threshold)
         {
             panelText.text = $"{outputValue} + {bias} > {threshold}";
+            ratio = 1;
         }
         else if(outputValue + bias < threshold)
         {
             panelText.text = $"{outputValue} + {bias} < {threshold}";
+            ratio = -1;
         }
         else
         {
             panelText.text = $"{outputValue} + {bias} = {threshold}";
+            ratio = 0;
         }
 
 
