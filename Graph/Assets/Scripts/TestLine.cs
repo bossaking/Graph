@@ -30,6 +30,7 @@ public class TestLine : MonoBehaviour
 
     public Text biasValueText;
     public Text stepsValueText;
+    public Text errorValueText;
     public Text logInfo;
 
     private LineRenderer lineRenderer;
@@ -46,7 +47,7 @@ public class TestLine : MonoBehaviour
     public double outputValue;
 
     public double bias;
-    int error;
+    public int error;
     int steps;
 
     public int stage;
@@ -116,6 +117,7 @@ public class TestLine : MonoBehaviour
         error = 0;
         steps = 0;
         stepsValueText.text = steps.ToString();
+        errorValueText.text = "-";
         logInfo.text = "Ready to learning";
 
         for (int i = 0; i < nodesCount; i++)
@@ -275,6 +277,9 @@ public class TestLine : MonoBehaviour
             stepsValueText.text = steps.ToString();
             for (int i = 0; i < inputValues.GetLength(0); i++)
             {
+                logout.ClearLogs();
+                errorValueText.text = "-";
+                errorValueText.color = Color.black;
                 HidePanels();
                 ClearNodes();
                 examplesTable.SelectRow(i);
@@ -313,15 +318,26 @@ public class TestLine : MonoBehaviour
                 if (actualValues[i] == expectedValues[i])
                 {
                     outputValueText.color = Color.green;
+                    errorValueText.color = Color.green;
                 }
                 else
                 {
                     outputValueText.color = Color.red;
+                    errorValueText.color = Color.red;
                 }
 
                 outputValueText.text = actualValues[i].ToString();
 
                 error = CalculateError(expectedValues[i], actualValues[i]);
+
+                errorValueText.text = error == 0 ? "0" : "1";
+
+
+
+                yield return new WaitForSecondsRealtime(2f);
+                stage = 5;
+
+                logout.WriteLog(stage);
 
                 if (error != 0)
                 {
@@ -337,7 +353,7 @@ public class TestLine : MonoBehaviour
                     bias += error;
                 }
 
-                biasValueText.text = bias.ToString();
+                biasValueText.text = Math.Round(bias, 2).ToString();
                 ResetSignalsPositions();
                 
                 yield return new WaitForSecondsRealtime(2f);
@@ -411,7 +427,7 @@ public class TestLine : MonoBehaviour
 
         for (int i = 0; i < inputNodes.Count; i++)
         {
-            double output = inputValues[j, i] * weights[i];
+            double output = Math.Round(inputValues[j, i] * weights[i],2);
 
             panelText.text += output < 0 ? $"({ output })" : $"{ output }";
 

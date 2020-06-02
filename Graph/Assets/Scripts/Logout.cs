@@ -24,35 +24,46 @@ public class Logout : MonoBehaviour
 
         if(stage == 0)
         {
-            logText.text = "Na wejścia są podawane wartości z przykładu";
+            logText.text = "Na wejścia podawane są wartości z przykładu";
         }
         else if(stage == 1)
         {
-            logText.text = "Wartość wejścia neuronu jest mnożona przez odpowiednią wagę";
+            logText.text = "Wartości wejścia neuronu mnożone są przez odpowiednie wagi";
         }
         else if(stage == 2)
         {
-            logText.text = "Wartości, otrzymane w poprzednim kroku się sumują";
+            logText.text = "Wartości otrzymane w poprzednim kroku sumują się";
         }
         else if(stage == 3)
         {
-            logText.text = "Do otrzymanego wyniku dodaję się BIAS i sprawdza się, jak suma odnosi się do wartości prógowej";
+            logText.text = "Do otrzymanego wyniku dodawany jest BIAS oraz sprawdzane jest, jak suma odnosi się do wartości progowej";
         }
-        else
+        else if(stage == 4)
         {
             if(testLine.ratio == -1)
             {
-                logText.text = "Suma jest mniejsza od wartości prógowej, więc na wyjście idzie 0";
+                logText.text = "Suma jest mniejsza od wartości progowej, więc na wyjściu pojawi się 0";
             }
             else if(testLine.ratio == 1)
             {
-                logText.text = "Suma jest większa od wartości prógowej, więc na wyjście idzie 1";
+                logText.text = "Suma jest większa od wartości progowej, więc na wyjściu pojawi się 1";
             }
             else
             {
-                logText.text = "Suma równa się wartości prógowej, więc na wyjście idzie 0";
+                logText.text = "Suma jest równa wartości progowej, więc na wyjściu pojawi się 0";
             }
             
+        }
+        else if(stage == 5)
+        {
+            if(testLine.error != 0)
+            {
+                logText.text = "Wartość wyjściowa nie jest zgodna z wartością treningową w tabeli. Wagi oraz BIAS ulegają zmianie";
+            }
+            else
+            {
+                logText.text = "Wartość wyjściowa jest zgodna z wartością treningową w tabeli. Wagi oraz BIAS nie ulegają zmianie";
+            }
         }
 
         Canvas.ForceUpdateCanvases();
