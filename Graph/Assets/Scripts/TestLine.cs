@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = System.Random;
@@ -19,6 +20,7 @@ public class TestLine : MonoBehaviour
     public GameObject parentCanvas;
 
     public Button resetButton;
+    public Button pauseButton;
 
     private List<GameObject> inputNodes = new List<GameObject>();
     private List<GameObject> weightNodes = new List<GameObject>();
@@ -53,6 +55,8 @@ public class TestLine : MonoBehaviour
     public int stage;
     [HideInInspector]
     public int ratio = 0;
+
+    private bool pause;
 
     Random random = new Random();
     public void Start()
@@ -107,7 +111,8 @@ public class TestLine : MonoBehaviour
 
     public void ResetValues()
     {
-
+        pause = false;
+        pauseButton.GetComponentInChildren<Text>().text = "PAUSE";
         inputValues = new int[,] { { 1, 1, 1, 0 }, { 1, 1, 1, 1 }, { 0, 1, 1, 0 }, { 0, 0, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 1 } };
         expectedValues = new int[] { 0, 0, 1, 1, 1, 0 };
         actualValues = new int[] { -1, -1, -1, -1, -1, -1 };
@@ -125,6 +130,8 @@ public class TestLine : MonoBehaviour
             weights[i] = Math.Round((random.NextDouble() * 2 - 1), 2);
             weightNodes[i].GetComponentInChildren<Text>().text = weights[i].ToString();
         }
+
+        pauseButton.interactable = false;
 
         HidePanels();
         ResetSignalsPositions();
@@ -246,6 +253,7 @@ public class TestLine : MonoBehaviour
         if(buttonText.text == "Start")
         {
             resetButton.interactable = false;
+            pauseButton.interactable = true;
             buttonText.text = "Stop";
             StartCoroutine(InfoAnimate());
             StartCoroutine(LearningEnum());
@@ -254,6 +262,8 @@ public class TestLine : MonoBehaviour
         {
             resetButton.interactable = true;
             buttonText.text = "Start";
+            pause = false;
+            pauseButton.interactable = false;
             StopLearning();
             logout.ClearLogs();
         }
@@ -345,18 +355,20 @@ public class TestLine : MonoBehaviour
                     for (int j = 0; j < inputValues.GetLength(1); j++)
                     {
                         weights[j] = Math.Round(inputValues[i, j] * error + weights[j], 2);
-
+                        weightNodes[j].transform.GetChild(0).GetComponent<Animator>().Play("Changed");
                         weightText = weightNodes[j].GetComponentInChildren<Text>();
                         weightText.text = weights[j].ToString();
                     }
 
                     bias += error;
+                    biasValueText.GetComponent<Animator>().Play("Changed");
                 }
 
                 biasValueText.text = Math.Round(bias, 2).ToString();
+                
                 ResetSignalsPositions();
                 
-                yield return new WaitForSecondsRealtime(2f);
+                yield return new WaitForSecondsRealtime(4f);
             }
             
             
@@ -367,6 +379,7 @@ public class TestLine : MonoBehaviour
 
         logInfo.text = $"Completed after {steps} steps";
         StopAllCoroutines();
+        HidePanels();
         
     }
 
@@ -494,6 +507,21 @@ public class TestLine : MonoBehaviour
         logInfo.text = "Learning...";
         yield return new WaitForSecondsRealtime(1f);
         StartCoroutine(InfoAnimate());
+    }
+
+    public void PauseButtonClick()
+    {
+        if (pause)
+        {
+            pause = false;
+            pauseButton.GetComponentInChildren<Text>().text = "PAUSE";
+        }
+        else
+        {
+            pause = true;
+            pauseButton.GetComponentInChildren<Text>().text = "RESUME";
+        }
+        
     }
 
 }

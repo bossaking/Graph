@@ -21,7 +21,8 @@ public class ExamplesTable : MonoBehaviour
     public void DrawExamplesTitle(int inputsCount, int examplesCount)
     {
         testLine = gameObject.GetComponent<TestLine>();
-        examplesTitlePanel.GetComponent<GridLayoutGroup>().cellSize = new Vector2(800 / inputsCount, 50);
+        float weight = examplesTitlePanel.GetComponent<RectTransform>().sizeDelta.x;
+        examplesTitlePanel.GetComponent<GridLayoutGroup>().cellSize = new Vector2(weight / inputsCount, 50);
 
 
         for (int i = 1; i <= inputsCount; i++)
@@ -30,7 +31,7 @@ public class ExamplesTable : MonoBehaviour
 
             if (i == inputsCount)
             {
-                cellTitle.GetComponent<Text>().text = "DECISION";
+                cellTitle.GetComponent<Text>().text = "DEC.";
             }
             else
             {
@@ -42,7 +43,7 @@ public class ExamplesTable : MonoBehaviour
         for (int i = 0; i < examplesCount; i++)
         {
             GameObject cellPanel = Instantiate(cellPanelPrefab, content.transform);
-            cellPanel.GetComponent<GridLayoutGroup>().cellSize = new Vector2(800 / inputsCount, 50);
+            cellPanel.GetComponent<GridLayoutGroup>().cellSize = new Vector2(weight / inputsCount, 50);
 
             for (int j = 0; j < inputsCount; j++)
             {
