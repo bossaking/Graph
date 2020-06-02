@@ -79,8 +79,10 @@ public class TestLine : MonoBehaviour
 
     public void Update()
     {
+
         if (stage == 1)
         {
+            
 
             for(int i = 0; i < nodesCount; i++)
             {
@@ -113,6 +115,7 @@ public class TestLine : MonoBehaviour
     {
         pause = false;
         pauseButton.GetComponentInChildren<Text>().text = "PAUSE";
+        Time.timeScale = 1;
         inputValues = new int[,] { { 1, 1, 1, 0 }, { 1, 1, 1, 1 }, { 0, 1, 1, 0 }, { 0, 0, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 1, 1 } };
         expectedValues = new int[] { 0, 0, 1, 1, 1, 0 };
         actualValues = new int[] { -1, -1, -1, -1, -1, -1 };
@@ -295,31 +298,31 @@ public class TestLine : MonoBehaviour
                 examplesTable.SelectRow(i);
                 ShowInputs(i);
                 logout.WriteLog(stage);
-                yield return new WaitForSecondsRealtime(2f);
+                yield return new WaitForSeconds(2f);
                 stage = 1;
-                yield return new WaitForSecondsRealtime(1f);
+                yield return new WaitForSeconds(1f);
 
                 
                 actualValues[i] = ActivationFunctionBinaryStep(i);
                 logout.WriteLog(stage);
-                yield return new WaitForSecondsRealtime(2f);
+                yield return new WaitForSeconds(2f);
 
                 stage = 2;
-                yield return new WaitForSecondsRealtime(1f);
+                yield return new WaitForSeconds(1f);
 
                 ShowSumPanel(i);
                 logout.WriteLog(stage);
-                yield return new WaitForSecondsRealtime(2f);
+                yield return new WaitForSeconds(2f);
                 stage = 3;
                 
-                yield return new WaitForSecondsRealtime(1f);
+                yield return new WaitForSeconds(1f);
                 ShowThresholdPanel();
                 logout.WriteLog(stage);
-                yield return new WaitForSecondsRealtime(2f);
+                yield return new WaitForSeconds(2f);
 
                 stage = 4;
 
-                yield return new WaitForSecondsRealtime(1f);
+                yield return new WaitForSeconds(1f);
 
                 logout.WriteLog(stage);
 
@@ -344,7 +347,7 @@ public class TestLine : MonoBehaviour
 
 
 
-                yield return new WaitForSecondsRealtime(2f);
+                yield return new WaitForSeconds(2f);
                 stage = 5;
 
                 logout.WriteLog(stage);
@@ -368,7 +371,7 @@ public class TestLine : MonoBehaviour
                 
                 ResetSignalsPositions();
                 
-                yield return new WaitForSecondsRealtime(4f);
+                yield return new WaitForSeconds(4f);
             }
             
             
@@ -501,11 +504,11 @@ public class TestLine : MonoBehaviour
     private IEnumerator InfoAnimate()
     {
         logInfo.text = "Learning.";
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSeconds(1f);
         logInfo.text = "Learning..";
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSeconds(1f);
         logInfo.text = "Learning...";
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSeconds(1f);
         StartCoroutine(InfoAnimate());
     }
 
@@ -513,13 +516,16 @@ public class TestLine : MonoBehaviour
     {
         if (pause)
         {
+            Time.timeScale = 1;
             pause = false;
             pauseButton.GetComponentInChildren<Text>().text = "PAUSE";
         }
         else
         {
+            Time.timeScale = 0;
             pause = true;
             pauseButton.GetComponentInChildren<Text>().text = "RESUME";
+            
         }
         
     }
