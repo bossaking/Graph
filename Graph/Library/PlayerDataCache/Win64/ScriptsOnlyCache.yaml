@@ -10,6 +10,12 @@ ScriptsOnlyBuild:
     - UnityEditor.Tilemaps.GridPalettes
     - UnityEditor.Tilemaps.SceneViewGridManager
     - UnityEditor.Tilemaps.TileDragAndDropManager
+    UnityEditor.Graphs.dll:
+    - UnityEditor.Graphs.AnimationBlendTree.Graph
+    - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
+    - UnityEditor.Graphs.AnimationStateMachine.Graph
+    - UnityEditor.Graphs.AnimationStateMachine.GraphGUI
+    - UnityEditor.Graphs.AnimatorControllerTool
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
     - UnityEditor.TestTools.TestRunner.TestListCacheData
@@ -74,9 +80,9 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 11114}
     - Class: 114
-      Script: {instanceID: 11484}
+      Script: {instanceID: 11310}
     - Class: 114
-      Script: {instanceID: 13100}
+      Script: {instanceID: 11486}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -286,7 +292,7 @@ ScriptsOnlyBuild:
     className: Learning
   - hash:
       serializedVersion: 2
-      Hash: 9dedda15a82934561e1907e8f0bf7aa4
+      Hash: 9a6a93f0a25b6b0688c9fed66458655c
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: TestLine
@@ -436,6 +442,12 @@ ScriptsOnlyBuild:
     className: TMP_StyleSheet
   - hash:
       serializedVersion: 2
+      Hash: b5ac1421546c4cbcd983dc99da50ce10
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: Logout
+  - hash:
+      serializedVersion: 2
       Hash: df434544c9f7b33d1cc7e635b180d279
     assemblyName: Unity.TextMeshPro.dll
     namespaceName: TMPro
@@ -524,12 +536,6 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: PlayableTrack
-  - hash:
-      serializedVersion: 2
-      Hash: b5ac1421546c4cbcd983dc99da50ce10
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: Logout
   platform: 19
   scenePathNames:
   - Assets/Scenes/SampleScene.unity
